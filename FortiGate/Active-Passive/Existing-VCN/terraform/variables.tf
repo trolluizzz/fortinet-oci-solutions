@@ -25,15 +25,27 @@ variable "vcn_ocid" {
 variable "igw_ocid" {
   description = "Enter your Internet Gateway OCID"
 }
-
-variable "mgmt_subnet_cidr" {
-  default = "10.1.1.0/24"
+##########################################################################################
+variable "mgmt_subnet_ocid" {
+  description = "OCID de la Management Subnet existente"
+  type        = string
 }
+variable "mgmt_routetable_ocid" {
+  description = "OCID of the existing Management Route Table"
+  type        = string
+}
+variable "mgmt_security_list_ocid" {
+  description = "OCID of the existing Management Security List"
+  type        = string
+}
+###########################################################################################
+# variable "mgmt_subnet_cidr" {
+#  default = "10.1.1.0/24"
+#}
 
 variable "mgmt_subnet_gateway" {
   default = "10.1.1.1"
 }
-
 
 variable "untrust_subnet_cidr" {
   default = "10.1.10.0/24"

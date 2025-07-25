@@ -11,7 +11,11 @@ resource "oci_core_instance" "FortiGate-A" {
   #  }
 
   create_vnic_details {
-    subnet_id        = oci_core_subnet.mgmt_subnet.id
+    #subnet_id        = oci_core_subnet.mgmt_subnet.id
+    #COMPROBAR SI OCUPO EL COMANDO ANTERIOR O LLAMAR EL DATA
+    ########################################
+    subnet_id = data.oci_core_subnet.mgmt_subnet.id
+    ########################################
     display_name     = "FortiGate-A"
     assign_public_ip = true
     hostname_label   = "vma"

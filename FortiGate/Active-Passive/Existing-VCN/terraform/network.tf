@@ -24,101 +24,128 @@ data "oci_core_internet_gateways" "igw" {
 ## MANAGEMENT NETWORK SETTINGS   ##
 ###################################
 
-resource "oci_core_route_table" "mgmt_routetable" {
-  compartment_id = var.compartment_ocid
-  vcn_id         = data.oci_core_vcn.my_vcn.id
-  display_name   = "mgmt-rt"
+#################################################################################################################
+  #resource "oci_core_route_table" "mgmt_routetable" {
+  #  compartment_id = var.compartment_ocid
+  #  vcn_id         = data.oci_core_vcn.my_vcn.id
+  #  display_name   = "mgmt-rt"
+  #
+  #  route_rules {
+  #    destination       = "0.0.0.0/0"
+  #    network_entity_id = var.igw_ocid
+  #  }
+  #}
+#################################################################################################################
 
-  route_rules {
-    destination       = "0.0.0.0/0"
-    network_entity_id = var.igw_ocid
-  }
+data "oci_core_route_table" "mgmt_routetable" {
+  route_table_id = var.mgmt_routetable_ocid
 }
+  ##################AQUI DEBEMOS PONER EL OCID DEL ROUTE TABLE DE MANAGEMENT#########################################
 
-resource "oci_core_subnet" "mgmt_subnet" {
-  cidr_block        = var.mgmt_subnet_cidr
-  display_name      = "management"
-  compartment_id    = var.compartment_ocid
-  vcn_id            = data.oci_core_vcn.my_vcn.id
-  route_table_id    = oci_core_route_table.mgmt_routetable.id
-  security_list_ids = [data.oci_core_vcn.my_vcn.default_security_list_id, oci_core_security_list.mgmt_security_list.id]
-  dhcp_options_id   = data.oci_core_vcn.my_vcn.default_dhcp_options_id
-  dns_label         = "mgmt"
+#################################################################################################################
+  #resource "oci_core_subnet" "mgmt_subnet" {
+  #  cidr_block        = var.mgmt_subnet_cidr
+  #  display_name      = "management"
+  #  compartment_id    = var.compartment_ocid
+  #  vcn_id            = data.oci_core_vcn.my_vcn.id
+  #  route_table_id    = oci_core_route_table.mgmt_routetable.id
+  #  security_list_ids = [data.oci_core_vcn.my_vcn.default_security_list_id, oci_core_security_list.mgmt_security_list.id]
+  #  dhcp_options_id   = data.oci_core_vcn.my_vcn.default_dhcp_options_id
+  #  dns_label         = "mgmt"
+  #}
+#################################################################################################################
+
+data "oci_core_subnet" "mgmt_subnet" {
+  subnet_id = var.mgmt_subnet_ocid
+  ##################AQUI DEBEMOS PONER EL OCID DEL SUBNET DE MANAGEMENT#########################################
 }
-
+#################################################################################################################
 # Protocols are specified as protocol numbers.
 # http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
-resource "oci_core_security_list" "mgmt_security_list" {
-  compartment_id = var.compartment_ocid
-  vcn_id         = data.oci_core_vcn.my_vcn.id
-  display_name   = "mgmt-security-list"
+#resource "oci_core_security_list" "mgmt_security_list" {
+  #  compartment_id = var.compartment_ocid
+  #  vcn_id         = data.oci_core_vcn.my_vcn.id
+  #  display_name   = "mgmt-security-list"
+  #
+  #  // allow outbound tcp traffic on all ports
+  #  egress_security_rules {
+  #    destination = "0.0.0.0/0"
+  #    protocol    = "6" //tcp
+  #  }
+  #
+  #  // allow inbound http (port 80) traffic
+  #  ingress_security_rules {
+  #    protocol  = "6" // tcp
+  #    source    = "0.0.0.0/0"
+  #    stateless = false
+  #
+  #    tcp_options {
+  #      min = 80
+  #      max = 80
+  #    }
+  #  }
+  #
+  #  // allow inbound http (port 443) traffic
+  #  ingress_security_rules {
+  #    protocol  = "6" // tcp
+  #    source    = "0.0.0.0/0"
+  #    stateless = false
+  #
+  #    tcp_options {
+  #      min = 443
+  #      max = 443
+  #    }
+  #  }
+  #
+  #  // allow inbound traffic to port 5901 (vnc)
+  #  ingress_security_rules {
+  #    protocol  = "6" // tcp
+  #    source    = "0.0.0.0/0"
+  #    stateless = false
+  #
+  #    tcp_options {
+  #      min = 5901
+  #      max = 5901
+  #    }
+  #  }
+  #
+  #  // allow inbound traffic to port 5901 (vnc)
+  #  ingress_security_rules {
+  #    protocol  = "6" // tcp
+  #    source    = "0.0.0.0/0"
+  #    stateless = false
+  #
+  #    tcp_options {
+  #      min = 5901
+  #      max = 5901
+  #
+  #    tcp_options {
+  #      min = 22
+  #      max = 22
+  #    }
+  #  }
+  #
+  #  // allow inbound icmp traffic of a specific type
+  #  ingress_security_rules {
+  #    protocol  = 1
+  #    source    = "0.0.0.0/0"
+  #    stateless = false
+  #
+  #    icmp_options {
+  #      type = 3
+  #      code = 4
+  #    }
+  #  }
+  #}
 
-  // allow outbound tcp traffic on all ports
-  egress_security_rules {
-    destination = "0.0.0.0/0"
-    protocol    = "6" //tcp
-  }
-
-  // allow inbound http (port 80) traffic
-  ingress_security_rules {
-    protocol  = "6" // tcp
-    source    = "0.0.0.0/0"
-    stateless = false
-
-    tcp_options {
-      min = 80
-      max = 80
-    }
-  }
-
-  // allow inbound http (port 443) traffic
-  ingress_security_rules {
-    protocol  = "6" // tcp
-    source    = "0.0.0.0/0"
-    stateless = false
-
-    tcp_options {
-      min = 443
-      max = 443
-    }
-  }
-
-  // allow inbound traffic to port 5901 (vnc)
-  ingress_security_rules {
-    protocol  = "6" // tcp
-    source    = "0.0.0.0/0"
-    stateless = false
-
-    tcp_options {
-      min = 5901
-      max = 5901
-    }
-  }
-
-  // allow inbound ssh traffic
-  ingress_security_rules {
-    protocol  = "6" // tcp
-    source    = "0.0.0.0/0"
-    stateless = false
-
-    tcp_options {
-      min = 22
-      max = 22
-    }
-  }
-
-  // allow inbound icmp traffic of a specific type
-  ingress_security_rules {
-    protocol  = 1
-    source    = "0.0.0.0/0"
-    stateless = false
-
-    icmp_options {
-      type = 3
-      code = 4
-    }
-  }
-}
+#################################################################################################################
+#################################################################################################################
+#          DESCOMENTAR ESTO PARA USAR EL SECURITY LIST EXISTENTE (SOLO SI CAUSA ERROR)
+#################################################################################################################
+#################################################################################################################
+#data "oci_core_security_list" "mgmt_security_list" {
+#  security_list_id = var.mgmt_security_list_ocid
+#}
 
 ###############################
 ## TRUST NETWORK SETTINGS    ##
